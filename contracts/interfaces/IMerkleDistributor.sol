@@ -11,7 +11,7 @@ interface IMerkleDistributor {
     function rewardsAddress() external view returns (address);
     // Returns the address of the burn pool contributed to by this contract.
     function burnAddress() external view returns (address);
-
+    
     // Returns true if the index has been marked claimed.
     function isClaimed(uint256 index) external view returns (bool);
     // Claim the given amount of the token to the given address. Reverts if the inputs are invalid.
