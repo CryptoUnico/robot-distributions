@@ -48,7 +48,7 @@ class Footer extends Component {
             <div className="footer-typer-container">
               <ReactTypingEffect
                 text={[
-                  "Hi, I am a quote",
+                  "Welcome",
                 ]}
                 cursorRenderer={(cursor) => (
                   <span className="footer-typer-cursor">{cursor}</span>
