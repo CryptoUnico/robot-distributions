@@ -179,7 +179,7 @@ export const merkle = {
     "type": "function"
   }
 ],
-  startTimestamp: 1608076800,
+  startTimestamp: 1611819800,
   merkleRoot: "0x7027097635ad9e10e690f61fb5f178d70dad157e51e5c6a946dc50fd24268993",
   tokenTotal: "0x01f6e7f5be7413520000",
   claims: {
