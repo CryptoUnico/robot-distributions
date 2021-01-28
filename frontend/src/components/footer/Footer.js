@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Logo from "../../assets/logos/robot-plain.png";
-import Aragon from "../../assets/logos/aragon.png";
 import { medias } from "./medias";
 import ReactTypingEffect from "react-typing-effect";
 import "./style.scss";
@@ -24,14 +23,6 @@ class Footer extends Component {
               <div className="item">
                 <div className="header">Resources</div>
                 <a href="https://gov.metafactory.ai/">Forum</a>
-              </div>
-              <div className="item">
-                <img
-                  src={Aragon}
-                  draggable={false}
-                  alt=""
-                  onClick={() => window.open("https://aragon.org/", "_blank")}
-                />
               </div>
             </div>
             <div className="media">

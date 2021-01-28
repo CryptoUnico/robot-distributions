@@ -1,12 +1,14 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity =0.6.11;
+// SPDX-License-Identifier: MIT
+pragma solidity =0.6.12;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
 
-contract MerkleDistributor is IMerkleDistributor {
+pragma solidity =0.6.12;
+
+contract RobotDistributor is IMerkleDistributor {
     using SafeMath for uint256;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
@@ -19,10 +21,10 @@ contract MerkleDistributor is IMerkleDistributor {
     uint256 public immutable endTime;
     uint256 internal immutable secondsInaDay = 86400;
 
-    constructor(address token_, bytes32 merkleRoot_,uint256 startTime_, uint256 endTime_) public {
+    constructor(address token_, bytes32 merkleRoot_, uint256 startTime_, uint256 endTime_) public {
         token = token_;
         merkleRoot = merkleRoot_;
-        deployer = msg.sender; // the deployer address
+        deployer = msg.sender;
         startTime = startTime_;
         endTime = endTime_;
     }
@@ -41,45 +43,44 @@ contract MerkleDistributor is IMerkleDistributor {
         claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
     }
 
+    function _setUnclaimed(uint256 index) private {
+        uint256 claimedWordIndex = index / 256;
+        uint256 claimedBitIndex = index % 256;
+        claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
+
+    }
+
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
-        require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // self-request only
-        require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
+        require(!isClaimed(index), 'RobotDistributor: Drop already claimed.');
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
-        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'MerkleDistributor: Invalid proof.');
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'RobotDistributor: Invalid proof.');
 
         // CLAIM AND SEND | TOKEN TO ACCOUNT
         uint256 duraTime = block.timestamp.sub(startTime);
         
-        require(block.timestamp >= startTime, 'MerkleDistributor: Too soon'); // [P] Start (unix)
-        require(block.timestamp <= endTime, 'MerkleDistributor: Too late'); // [P] End (unix)
+        require(block.timestamp >= startTime, 'RobotDistributor: Too soon'); // [P] Start (unix)
+        require(block.timestamp <= endTime, 'RobotDistributor: Too late'); // [P] End (unix)
 
         uint256 duraDays = duraTime.div(secondsInaDay);
-        require(duraDays <= 100, 'MerkleDistributor: Too late'); // Check days
-
-        uint256 claimableDays = duraDays >= 90 ? 90 : duraDays; // limits claimable days (90)
-        uint256 claimableAmount = amount; // 10% + 1% daily
-        require(claimableAmount <= amount, 'MerkleDistributor: Slow your roll'); // gem insurance
-        uint256 forfeitedAmount = amount.sub(claimableAmount);
+        require(duraDays <= 28, 'RobotDistributor: Too late');
+        uint256 claimableAmount = amount;
 
         _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'MerkleDistributor: Transfer to Account failed.');
+        require(IERC20(token).transfer(account, claimableAmount), 'RobotDistributor: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }
-
-    function collectDust(address _token, uint256 _amount) external {
-        require(msg.sender == deployer, "!deployer");
-        require(_token != token, "!token");
-        _token == address(0) ? payable(deployer).transfer(_amount) : IERC20(_token).transfer(deployer, _amount);
-
-    }
     
-    function collectUnclaimed(uint256 amount) external{
-        require(msg.sender == deployer, 'MerkleDistributor: not deployer');
-        require(IERC20(token).transfer(deployer, amount), 'MerkleDistributor: collectUnclaimed failed.');
+    function resetClaims() external override {
+        delete mask;
+    }
+
+    function collectUnclaimed(uint256 amount) external {
+        require(msg.sender == deployer, 'RobotDistributor: not deployer');
+        require(IERC20(token).transfer(deployer, amount), 'RobotDistributor: collectUnclaimed failed.');
     }
 
     function dev(address _deployer) public {

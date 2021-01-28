@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logos/robot-plain.png";
 import { Menu, X, ChevronDown, ChevronUp } from "react-feather";
-import { resources, social } from "./items";
+import { buy, resources, social } from "./items";
 import "./style.scss";
 
 export default class Header extends Component {
@@ -127,8 +127,9 @@ export default class Header extends Component {
           <div
             className={`xs-nav-menu ${this.state.isExpanded ? "expanded" : ""}`}
           >
-            {this.getAccordion("resources", resources)}
-            {this.getAccordion("social", social)}
+            { this.getLink(buy) }
+            { this.getAccordion("resources", resources) }
+            { this.getAccordion("social", social) }
           </div>
         </>
       );
@@ -138,8 +139,9 @@ export default class Header extends Component {
       return (
         <>
           <div className="lg-nav-menu">
-            {this.getAccordion("resources", resources)}
-            {this.getAccordion("social", social)}
+            { this.getLink(buy) }
+            { this.getAccordion("resources", resources) }
+            { this.getAccordion("social", social) }
           </div>
         </>
       );

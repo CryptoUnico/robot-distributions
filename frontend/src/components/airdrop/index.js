@@ -120,7 +120,7 @@ class Airdrop extends Component {
 
   connectMainnet = async (accounts) => {
     await this.web3?.eth?.getChainId().then((x) => {
-      if (x === 1) {
+      if (x === 4) { // TOGGLE 1 FOR MAINNET | 4 FOR RINKEYBY
         this.setState({ account: accounts[0].toString(), isConnected: true });
 
         this.ROBOTContract = new this.web3.eth.Contract(

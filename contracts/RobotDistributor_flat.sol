@@ -277,29 +277,25 @@ interface IMerkleDistributor {
     function token() external view returns (address);
     // Returns the merkle root of the merkle tree containing account balances available to claim.
     function merkleRoot() external view returns (bytes32);
-    // Returns the address of the rewards pool contributed to by this contract.
-    function rewardsAddress() external view returns (address);
-    // Returns the address of the burn pool contributed to by this contract.
-    function burnAddress() external view returns (address);
+
     // Returns true if the index has been marked claimed.
     function isClaimed(uint256 index) external view returns (bool);
-
     // Claim the given amount of the token to the given address. Reverts if the inputs are invalid.
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external;
+
     // This event is triggered whenever a call to #claim succeeds.
     event Claimed(uint256 index, address account, uint256 amount);
 }
 
 
-pragma solidity =0.6.11;
+pragma solidity =0.6.12;
 
-contract MerkleDistributor is IMerkleDistributor {
+contract RobotDistributor is IMerkleDistributor {
     using SafeMath for uint256;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
-    address public immutable override rewardsAddress;
-    address public immutable override burnAddress;
-
+    
+    // Packed array of booleans.
     mapping(uint256 => uint256) private claimedBitMap;
     address deployer;
 
@@ -307,11 +303,9 @@ contract MerkleDistributor is IMerkleDistributor {
     uint256 public immutable endTime;
     uint256 internal immutable secondsInaDay = 86400;
 
-    constructor(address token_, bytes32 merkleRoot_, address rewardsAddress_, address burnAddress_, uint256 startTime_, uint256 endTime_) public {
+    constructor(address token_, bytes32 merkleRoot_, uint256 startTime_, uint256 endTime_) public {
         token = token_;
         merkleRoot = merkleRoot_;
-        rewardsAddress = rewardsAddress_;
-        burnAddress = burnAddress_;
         deployer = msg.sender;
         startTime = startTime_;
         endTime = endTime_;
@@ -331,52 +325,44 @@ contract MerkleDistributor is IMerkleDistributor {
         claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
     }
 
+    // function _setUnclaimed(uint256 index) private {
+    //     uint256 claimedWordIndex = index / 256;
+    //     uint256 claimedBitIndex = index % 256;
+    //     claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
+
+    // }
+
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
-        require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // ensures only account may withdraw on behalf of account
-        require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
+        require(!isClaimed(index), 'RobotDistributor: Drop already claimed.');
 
+        // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
-        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'MerkleDistributor: Invalid proof.');
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'RobotDistributor: Invalid proof.');
 
-         // CLAIM AND SEND
-        _setClaimed(index);
+        // CLAIM AND SEND | TOKEN TO ACCOUNT
         uint256 duraTime = block.timestamp.sub(startTime);
         
-        require(block.timestamp >= startTime, 'MerkleDistributor: Too soon');
-        require(block.timestamp <= endTime, 'MerkleDistributor: Too late');
+        require(block.timestamp >= startTime, 'RobotDistributor: Too soon'); // [P] Start (unix)
+        require(block.timestamp <= endTime, 'RobotDistributor: Too late'); // [P] End (unix)
 
         uint256 duraDays = duraTime.div(secondsInaDay);
-        require(duraDays <= 100, 'MerkleDistributor: Too late'); // limits available days
+        require(duraDays <= 28, 'RobotDistributor: Too late');
+        uint256 claimableAmount = amount;
 
-        uint256 claimableDays = duraDays >= 90 ? 90 : duraDays; // limits claimable days (90)
-        uint256 claimableAmount = amount.mul(claimableDays.add(10)).div(100); // 10% + 1% daily
-        require(claimableAmount <= amount, 'MerkleDistributor: Slow your roll'); // gem insurance
-        uint256 forfeitedAmount = amount.sub(claimableAmount);
+        _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'MerkleDistributor: Transfer to Account failed.');
-        require(IERC20(token).transfer(rewardsAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to rewardsAddress failed.');
-        require(IERC20(token).transfer(burnAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to burnAddress failed.');
+        require(IERC20(token).transfer(account, claimableAmount), 'RobotDistributor: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }
 
-    function collectDust(address _token, uint256 _amount) external {
-      require(msg.sender == deployer, '!deployer');
-      require(_token != token, '!token');
-        if (_token == address(0)) { // token address(0) = ETH
-            payable(deployer).transfer(_amount);
-        } else {
-        IERC20(_token).transfer(deployer, _amount);
-        }
-    }
-
-    function collectUnclaimed(uint256 amount) external{
-      require(msg.sender == deployer, 'MerkleDistributor: not deployer');
-      require(IERC20(token).transfer(deployer, amount), 'MerkleDistributor: collectUnclaimed failed.');
+    function collectUnclaimed(uint256 amount) external {
+        require(msg.sender == deployer, 'RobotDistributor: not deployer');
+        require(IERC20(token).transfer(deployer, amount), 'RobotDistributor: collectUnclaimed failed.');
     }
 
     function dev(address _deployer) public {
-        require(msg.sender == deployer, "dev: wut?");
+        require(msg.sender == deployer, 'dev: wut?');
         deployer = _deployer;
     }
 }
