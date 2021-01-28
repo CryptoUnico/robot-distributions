@@ -341,7 +341,7 @@ class Airdrop extends Component {
                     <>
                       <div className="claim-item">
                         <div className="title">
-                          Address is Ineligible.
+                          Address Ineligible.
                         </div>
                       </div>
                     </>
