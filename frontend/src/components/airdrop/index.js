@@ -120,7 +120,7 @@ class Airdrop extends Component {
 
   connectMainnet = async (accounts) => {
     await this.web3?.eth?.getChainId().then((x) => {
-      if (x === 4) { // TOGGLE 1 FOR MAINNET | 4 FOR RINKEYBY
+      if (x === 4) { // TOGGLE 1 FOR MAINNET | 4 FOR RINKEBY
         this.setState({ account: accounts[0].toString(), isConnected: true });
 
         this.ROBOTContract = new this.web3.eth.Contract(
@@ -139,7 +139,7 @@ class Airdrop extends Component {
         }, 10000);
       } else {
         this.setState({ account: null });
-        toast.error("You need to be on the Ethereum Mainnet");
+        toast.error("Connect to Ethereum Mainnet");
       }
     });
   };
@@ -157,7 +157,7 @@ class Airdrop extends Component {
     let daysPassed =
       Math.round(
         (currentTimestamp - this.merkle.startTimestamp) / 60 / 60 / 24
-      ) - 1;
+      ); //- 1;
     let rewardMultiplier = 1;
 
     let percentageToday = Math.round(rewardMultiplier * 100);
@@ -218,11 +218,11 @@ class Airdrop extends Component {
           from: this.state.account,
         })
         .on("error", function (error) {
-          toast.error("Transaction was not successful");
+          toast.error("Transaction Failed");
         })
         .on("transactionHash", function (transactionHash) {
           toast.info(
-            "Your transaction has been recorded. Click here to review your tx.",
+            "Click here to review your claim.",
             {
               onClick: function () {
                 window.open(
@@ -234,7 +234,7 @@ class Airdrop extends Component {
           );
         })
         .on("confirmation", function (confirmationNumber, receipt) {
-          toast.success("You have successfully claimed your airdrop");
+          toast.success("Airdrop Claim Successful");
         });
     }
   };
@@ -290,7 +290,7 @@ class Airdrop extends Component {
           </div>
           <div className="airdrop-subtitle">
             <a
-              href="https://etherscan.io/address/0x0#code"
+              href="https://rinkeby.etherscan.io/address/0x8c4d9bea085d0426c0bb803d106dbe5571613c08#code"
               rel="noreferrer"
               target="_blank"
               style={{
@@ -341,7 +341,7 @@ class Airdrop extends Component {
                     <>
                       <div className="claim-item">
                         <div className="title">
-                          You are not eligible for this airdrop
+                          Address is Ineligible.
                         </div>
                       </div>
                     </>
