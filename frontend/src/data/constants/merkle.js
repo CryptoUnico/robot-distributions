@@ -1,22 +1,6 @@
 export const merkle = {
-  contractAddress: "0x7ea0f8bb2f01c197985c285e193dd5b8a69836c0", // UPDATE UPON DEPLOYMENT
+  contractAddress: "", // UPDATE UPON DEPLOYMENT
   contractABI: [
-    {
-      inputs: [
-        { internalType: "address", name: "token_", type: "address" },
-        { internalType: "bytes32", name: "merkleRoot_", type: "bytes32" },
-        {
-          internalType: "address",
-          name: "rewardsAddress_",
-          type: "address",
-        },
-        { internalType: "address", name: "burnAddress_", type: "address" },
-        { internalType: "uint256", name: "startTime_", type: "uint256" },
-        { internalType: "uint256", name: "endTime_", type: "uint256" },
-      ],
-      stateMutability: "nonpayable",
-      type: "constructor",
-    },
     {
       anonymous: false,
       inputs: [
@@ -107,13 +91,6 @@ export const merkle = {
       inputs: [],
       name: "merkleRoot",
       outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "rewardsAddress",
-      outputs: [{ internalType: "address", name: "", type: "address" }],
       stateMutability: "view",
       type: "function",
     },

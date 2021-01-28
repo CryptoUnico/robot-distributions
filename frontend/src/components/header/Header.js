@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/logos/governor-plain.png";
+import Logo from "../../assets/logos/robot-plain.png";
 import { Menu, X, ChevronDown, ChevronUp } from "react-feather";
-import { solutions, applications, resources, social } from "./items";
+import { resources, social } from "./items";
 import "./style.scss";
 
 export default class Header extends Component {
@@ -70,7 +70,7 @@ export default class Header extends Component {
                 this.setState({ isExpanded: null, isItemOpen: null });
                 if (c.title === "Litepaper") {
                   window.open(
-                    "https://governordao.org/papers/GDAO-Litepaper.pdf",
+                    "https://metafactory.ai",
                     "_blank"
                   );
                 }
@@ -127,8 +127,6 @@ export default class Header extends Component {
           <div
             className={`xs-nav-menu ${this.state.isExpanded ? "expanded" : ""}`}
           >
-            {this.getLink(solutions)}
-            {this.getAccordion("applications", applications)}
             {this.getAccordion("resources", resources)}
             {this.getAccordion("social", social)}
           </div>
@@ -140,8 +138,6 @@ export default class Header extends Component {
       return (
         <>
           <div className="lg-nav-menu">
-            {this.getLink(solutions)}
-            {this.getAccordion("applications", applications)}
             {this.getAccordion("resources", resources)}
             {this.getAccordion("social", social)}
           </div>
@@ -152,11 +148,11 @@ export default class Header extends Component {
     return (
       <div className="header-container">
         <div className="header-content">
-          <a href="https://governordao.org" className="logo-container">
+          <a href="https://metafactory.ai" className="logo-container">
             <div className="logo-img">
               <img src={Logo} alt="logo" />
             </div>
-            <div className="logo-title">Governor</div>
+            <div className="logo-title">MetaFactory</div>
           </a>
           {this.state.isSmall || this.state.isMedium ? <XSNav /> : <LGNav />}
         </div>

@@ -1,6 +1,7 @@
 {
   "name": "robot-distributions-frontend",
   "version": "0.1.0",
+  "author": "Uni",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.0",

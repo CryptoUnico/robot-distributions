@@ -1,8 +1,5 @@
-export const applications = [
-  { to: "https://shop.metafactory.ai", title: "Shop" },
-];
-
 export const resources = [
+  { to: "https://shop.metafactory.ai", title: "Shop" },
   { to: "https://gov.metafactory.ai/", title: "Forum" },
 ];
 

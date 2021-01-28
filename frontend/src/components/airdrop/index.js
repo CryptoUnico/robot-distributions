@@ -160,14 +160,6 @@ class Airdrop extends Component {
       ) - 1;
     let rewardMultiplier = 1;
 
-    // if (daysPassed > 90) {
-    //   rewardMultiplier = 1;
-    // } else if (daysPassed < 0) {
-    //   rewardMultiplier = 0;
-    // } else {
-    //   rewardMultiplier += daysPassed * 0.01;
-    // }
-
     let percentageToday = Math.round(rewardMultiplier * 100);
 
     this.setState({ percentage: percentageToday, day: daysPassed });
@@ -180,16 +172,6 @@ class Airdrop extends Component {
           this.setState({
             unclaimed: parseFloat(this.web3.utils.fromWei(result, "ether")),
           });
-        });
-      this.ROBOTContract.methods
-        .balanceOf(this.rewardPoolAddress)
-        .call()
-        .then((result) => {
-          let rewardResult = parseFloat(
-            this.web3.utils.fromWei(result, "ether")
-          );
-
-          this.setState({ reward: rewardResult });
         });
       if (this.state.isEligible) {
         this.airdropContract.methods
@@ -324,18 +306,8 @@ class Airdrop extends Component {
 
           <div className="airdrop-details">
             <div className="upper">
-              <div className="details-item">
-                <div className="title">Unclaimed ROBOT</div>
-                <div className="value">
-                  {this.state.unclaimed.toLocaleString()}
-                </div>
-              </div>
-              <div className="details-item">
-                <div className="title">Reward Pool</div>
-                <div className="value">
-                  {this.state.reward.toLocaleString()}
-                </div>
-              </div>
+              <div className="details-item">  </div>
+              <div className="details-item">  </div>
             </div>
             <div className="lower">
               {this.state.isAirdropLive ? (
