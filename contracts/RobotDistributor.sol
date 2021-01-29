@@ -39,8 +39,8 @@ contract RobotDistributor is IMerkleDistributor {
     function newDrop(bytes32 _merkleRoot) external onlyOwner {
         for (uint i = claimedBitIndices.length; i > 0; i--) {
             uint256 index = claimedBitIndices[i];
-            delete claimedBitIndices[index];
-            claimedBitIndices[i] = 0;
+            delete claimedBitIndices[i];
+            claimedBitIndices[index] = 0;
         }
         merkleRoot = _merkleRoot;
         cancelled = false;
