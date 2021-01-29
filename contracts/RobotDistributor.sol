@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.6.12;
+pragma solidity ^0.7.0;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
-
-pragma solidity =0.6.12;
 
 contract RobotDistributor is IMerkleDistributor {
     using SafeMath for uint256;
@@ -60,8 +58,8 @@ contract RobotDistributor is IMerkleDistributor {
         // CLAIM AND SEND | TOKEN TO ACCOUNT
         uint256 duraTime = block.timestamp.sub(startTime);
         
-        require(block.timestamp >= startTime, 'RobotDistributor: Too soon'); // [P] Start (unix)
-        require(block.timestamp <= endTime, 'RobotDistributor: Too late'); // [P] End (unix)
+        require(block.timestamp >= startTime, 'RobotDistributor: Too soon');
+        require(block.timestamp <= endTime, 'RobotDistributor: Too late');
 
         uint256 duraDays = duraTime.div(secondsInaDay);
         require(duraDays <= 28, 'RobotDistributor: Too late');

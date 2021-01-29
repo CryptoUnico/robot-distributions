@@ -113,7 +113,7 @@ class Airdrop extends Component {
       }
     } else {
       toast.error(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        "Non-Ethereum browser detected. Consider using MetaMask"
       );
     }
   };
@@ -139,7 +139,8 @@ class Airdrop extends Component {
         }, 10000);
       } else {
         this.setState({ account: null });
-        toast.error("Connect to Ethereum Mainnet");
+        //toast.error("Connect to Ethereum Mainnet"); // TOGGLE OFF FOR MAINNET
+        toast.error("Connect to Rinkeby");
       }
     });
   };
@@ -157,7 +158,7 @@ class Airdrop extends Component {
     let daysPassed =
       Math.round(
         (currentTimestamp - this.merkle.startTimestamp) / 60 / 60 / 24
-      ); //- 1;
+      ) /*- 1*/;
     let rewardMultiplier = 1;
 
     let percentageToday = Math.round(rewardMultiplier * 100);

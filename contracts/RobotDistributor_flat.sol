@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.7.0;
 
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.0;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -78,166 +80,10 @@ interface IERC20 {
 }
 
 
-pragma solidity ^0.6.0;
 
-/**
- * @dev Wrappers over Solidity's arithmetic operations with added overflow
- * checks.
- *
- * Arithmetic operations in Solidity wrap on overflow. This can easily result
- * in bugs, because programmers usually assume that an overflow raises an
- * error, which is the standard behavior in high level programming languages.
- * `SafeMath` restores this intuition by reverting the transaction when an
- * operation overflows.
- *
- * Using this library instead of the unchecked operations eliminates an entire
- * class of bugs, so it's recommended to use it always.
- */
-library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
+// SPDX-License-Identifier: MIT
 
-        return c;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, "SafeMath: subtraction overflow");
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b <= a, errorMessage);
-        uint256 c = a - b;
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-        // benefit is lost if 'b' is also tested.
-        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-        if (a == 0) {
-            return 0;
-        }
-
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return div(a, b, "SafeMath: division by zero");
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b > 0, errorMessage);
-        uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return mod(a, b, "SafeMath: modulo by zero");
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts with custom message when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b != 0, errorMessage);
-        return a % b;
-    }
-}
-
-
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.8.0;
 
 /**
  * @dev These functions deal with verification of Merkle trees (hash trees),
@@ -269,7 +115,8 @@ library MerkleProof {
     }
 }
 
-pragma solidity >=0.5.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.0;
 
 // Allows anyone to claim a token if they exist in a merkle root.
 interface IMerkleDistributor {
@@ -285,30 +132,57 @@ interface IMerkleDistributor {
 
     // This event is triggered whenever a call to #claim succeeds.
     event Claimed(uint256 index, address account, uint256 amount);
+    
+    // function newDrop(bytes32 _merkleRoot) external;
+    // event NewDrop();
+    
+    // function cancelDrop(uint256 _address) external;
+    // event CancelDrop();
 }
-
-
-pragma solidity =0.6.12;
-
 contract RobotDistributor is IMerkleDistributor {
-    using SafeMath for uint256;
+
+    event CancelDrop();
+    event NewDrop();
+
+    address public owner;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
     
-    // Packed array of booleans.
+    bool public cancelled;
+
     mapping(uint256 => uint256) private claimedBitMap;
-    address deployer;
+    uint256[] private claimedBitIndices;
 
-    uint256 public immutable startTime;
-    uint256 public immutable endTime;
-    uint256 internal immutable secondsInaDay = 86400;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "onlyOwner: not owner");
+        _;
+    }
 
-    constructor(address token_, bytes32 merkleRoot_, uint256 startTime_, uint256 endTime_) public {
-        token = token_;
-        merkleRoot = merkleRoot_;
-        deployer = msg.sender;
-        startTime = startTime_;
-        endTime = endTime_;
+    constructor(
+        address _token,
+        bytes32 _merkleRoot
+    ) public {
+        owner = msg.sender;
+        token = _token;
+        merkleRoot = _merkleRoot;
+    }
+
+    function newDrop(bytes32 _merkleRoot) external onlyOwner {
+        for (i = claimedBitIndices.length; uint i > 0; i--) {
+            index = claimedBitIndices[i];
+            delete claimedBitIndices[i];
+            claimedBitIndices[i] = 0;
+        }
+        merkleRoot = _merkleRoot;
+        cancelled = false;
+        emit NewDrop();
+    }
+
+    function cancelDrop(address _address) external onlyOwner {
+        require(!isCancelled, 'cancelDrop: Drop already cancelled');
+        cancelled = true;
+        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this)), 'collectUnclaimed: collectUnclaimed failed.'));
+        emit CancelDrop();
     }
 
     function isClaimed(uint256 index) public view override returns (bool) {
@@ -323,46 +197,23 @@ contract RobotDistributor is IMerkleDistributor {
         uint256 claimedWordIndex = index / 256;
         uint256 claimedBitIndex = index % 256;
         claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
+        claimedBitIndices.push(claimedWordIndex);
     }
 
-    // function _setUnclaimed(uint256 index) private {
-    //     uint256 claimedWordIndex = index / 256;
-    //     uint256 claimedBitIndex = index % 256;
-    //     claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
-
-    // }
-
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
-        require(!isClaimed(index), 'RobotDistributor: Drop already claimed.');
+        require(!cancelled, 'claim: Drop is cancelled');
+        require(msg.sender == account, 'claim: Only account may withdraw'); // self-request only
+        require(!isClaimed(index), 'claim: Drop already claimed.');
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
-        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'RobotDistributor: Invalid proof.');
-
-        // CLAIM AND SEND | TOKEN TO ACCOUNT
-        uint256 duraTime = block.timestamp.sub(startTime);
-        
-        require(block.timestamp >= startTime, 'RobotDistributor: Too soon'); // [P] Start (unix)
-        require(block.timestamp <= endTime, 'RobotDistributor: Too late'); // [P] End (unix)
-
-        uint256 duraDays = duraTime.div(secondsInaDay);
-        require(duraDays <= 28, 'RobotDistributor: Too late');
-        uint256 claimableAmount = amount;
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'claim: Invalid proof.');
 
         _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'RobotDistributor: Transfer to Account failed.');
+        require(IERC20(token).transfer(account, claimableAmount), 'claim: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }
 
-    function collectUnclaimed(uint256 amount) external {
-        require(msg.sender == deployer, 'RobotDistributor: not deployer');
-        require(IERC20(token).transfer(deployer, amount), 'RobotDistributor: collectUnclaimed failed.');
-    }
-
-    function dev(address _deployer) public {
-        require(msg.sender == deployer, 'dev: wut?');
-        deployer = _deployer;
-    }
 }
