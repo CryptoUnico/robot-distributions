@@ -291,7 +291,7 @@ class Airdrop extends Component {
           </div>
           <div className="airdrop-subtitle">
             <a
-              href="https://rinkeby.etherscan.io/address/0x124B06C5ce47De7A6e9EFDA71a946717130079E6#code"
+              href="https://rinkeby.etherscan.io/address/0xd1666190bE4fC9842b12397047B9B8Ad3A5D48c4#code"
               rel="noreferrer"
               target="_blank"
               style={{
