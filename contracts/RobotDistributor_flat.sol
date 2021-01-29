@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.7.0;
-
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.7.0;
@@ -79,10 +76,6 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-
-
-// SPDX-License-Identifier: MIT
-
 pragma solidity >=0.6.0 <0.8.0;
 
 /**
@@ -115,7 +108,6 @@ library MerkleProof {
     }
 }
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
 // Allows anyone to claim a token if they exist in a merkle root.
@@ -139,6 +131,9 @@ interface IMerkleDistributor {
     // function cancelDrop(uint256 _address) external;
     // event CancelDrop();
 }
+
+pragma solidity ^0.7.0;
+
 contract RobotDistributor is IMerkleDistributor {
 
     event CancelDrop();
@@ -146,7 +141,7 @@ contract RobotDistributor is IMerkleDistributor {
 
     address public owner;
     address public immutable override token;
-    bytes32 public immutable override merkleRoot;
+    bytes32 public override merkleRoot;
     
     bool public cancelled;
 
@@ -161,16 +156,16 @@ contract RobotDistributor is IMerkleDistributor {
     constructor(
         address _token,
         bytes32 _merkleRoot
-    ) public {
+    ) {
         owner = msg.sender;
         token = _token;
         merkleRoot = _merkleRoot;
     }
 
     function newDrop(bytes32 _merkleRoot) external onlyOwner {
-        for (i = claimedBitIndices.length; uint i > 0; i--) {
-            index = claimedBitIndices[i];
-            delete claimedBitIndices[i];
+        for (uint i = claimedBitIndices.length; i > 0; i--) {
+            uint256 index = claimedBitIndices[i];
+            delete claimedBitIndices[index];
             claimedBitIndices[i] = 0;
         }
         merkleRoot = _merkleRoot;
@@ -179,9 +174,9 @@ contract RobotDistributor is IMerkleDistributor {
     }
 
     function cancelDrop(address _address) external onlyOwner {
-        require(!isCancelled, 'cancelDrop: Drop already cancelled');
+        require(!cancelled, 'cancelDrop: Drop already cancelled');
         cancelled = true;
-        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this)), 'collectUnclaimed: collectUnclaimed failed.'));
+        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this))), 'cancelDrop: transfer failed.');
         emit CancelDrop();
     }
 
@@ -211,7 +206,7 @@ contract RobotDistributor is IMerkleDistributor {
 
         _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'claim: Transfer to Account failed.');
+        require(IERC20(token).transfer(account, amount), 'claim: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }

@@ -6,25 +6,52 @@ import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
 
+pragma solidity ^0.7.0;
+
 contract RobotDistributor is IMerkleDistributor {
-    using SafeMath for uint256;
+
+    event CancelDrop();
+    event NewDrop();
+
+    address public owner;
     address public immutable override token;
-    bytes32 public immutable override merkleRoot;
+    bytes32 public override merkleRoot;
     
-    // Packed array of booleans.
+    bool public cancelled;
+
     mapping(uint256 => uint256) private claimedBitMap;
-    address deployer;
+    uint256[] private claimedBitIndices;
 
-    uint256 public immutable startTime;
-    uint256 public immutable endTime;
-    uint256 internal immutable secondsInaDay = 86400;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "onlyOwner: not owner");
+        _;
+    }
 
-    constructor(address token_, bytes32 merkleRoot_, uint256 startTime_, uint256 endTime_) public {
-        token = token_;
-        merkleRoot = merkleRoot_;
-        deployer = msg.sender;
-        startTime = startTime_;
-        endTime = endTime_;
+    constructor(
+        address _token,
+        bytes32 _merkleRoot
+    ) {
+        owner = msg.sender;
+        token = _token;
+        merkleRoot = _merkleRoot;
+    }
+
+    function newDrop(bytes32 _merkleRoot) external onlyOwner {
+        for (uint i = claimedBitIndices.length; i > 0; i--) {
+            uint256 index = claimedBitIndices[i];
+            delete claimedBitIndices[index];
+            claimedBitIndices[i] = 0;
+        }
+        merkleRoot = _merkleRoot;
+        cancelled = false;
+        emit NewDrop();
+    }
+
+    function cancelDrop(address _address) external onlyOwner {
+        require(!cancelled, 'cancelDrop: Drop already cancelled');
+        cancelled = true;
+        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this))), 'cancelDrop: transfer failed.');
+        emit CancelDrop();
     }
 
     function isClaimed(uint256 index) public view override returns (bool) {
@@ -39,50 +66,23 @@ contract RobotDistributor is IMerkleDistributor {
         uint256 claimedWordIndex = index / 256;
         uint256 claimedBitIndex = index % 256;
         claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
-    }
-
-    function _setUnclaimed(uint256 index) private {
-        uint256 claimedWordIndex = index / 256;
-        uint256 claimedBitIndex = index % 256;
-        claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
-
+        claimedBitIndices.push(claimedWordIndex);
     }
 
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
-        require(!isClaimed(index), 'RobotDistributor: Drop already claimed.');
+        require(!cancelled, 'claim: Drop is cancelled');
+        require(msg.sender == account, 'claim: Only account may withdraw'); // self-request only
+        require(!isClaimed(index), 'claim: Drop already claimed.');
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
-        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'RobotDistributor: Invalid proof.');
-
-        // CLAIM AND SEND | TOKEN TO ACCOUNT
-        uint256 duraTime = block.timestamp.sub(startTime);
-        
-        require(block.timestamp >= startTime, 'RobotDistributor: Too soon');
-        require(block.timestamp <= endTime, 'RobotDistributor: Too late');
-
-        uint256 duraDays = duraTime.div(secondsInaDay);
-        require(duraDays <= 28, 'RobotDistributor: Too late');
-        uint256 claimableAmount = amount;
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'claim: Invalid proof.');
 
         _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'RobotDistributor: Transfer to Account failed.');
+        require(IERC20(token).transfer(account, amount), 'claim: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }
-    
-    function resetClaims() external override {
-        delete mask;
-    }
 
-    function collectUnclaimed(uint256 amount) external {
-        require(msg.sender == deployer, 'RobotDistributor: not deployer');
-        require(IERC20(token).transfer(deployer, amount), 'RobotDistributor: collectUnclaimed failed.');
-    }
-
-    function dev(address _deployer) public {
-        require(msg.sender == deployer, 'dev: wut?');
-        deployer = _deployer;
-    }
 }
