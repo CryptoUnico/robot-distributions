@@ -25,6 +25,7 @@ class Airdrop extends Component {
       reward: 0,
       claimable: 0,
       isAirdropClaimed: false,
+      //unclaimedAirdrops: false,
       isEligible: false,
       isAirdropLive: false,
       countdownString: "0:0:0",
@@ -120,7 +121,7 @@ class Airdrop extends Component {
 
   connectMainnet = async (accounts) => {
     await this.web3?.eth?.getChainId().then((x) => {
-      if (x === 4) { // TOGGLE 1 FOR MAINNET | 4 FOR RINKEBY
+      if (x === 1) {
         this.setState({ account: accounts[0].toString(), isConnected: true });
 
         this.ROBOTContract = new this.web3.eth.Contract(
@@ -137,10 +138,27 @@ class Airdrop extends Component {
         this.statsInterval = setInterval(function () {
           self.getAirdropStats();
         }, 10000);
-      } else {
+      } else if (x === 4) {
+        this.setState({ account: accounts[0].toString(), isConnected: true });
+
+        this.ROBOTContract = new this.web3.eth.Contract(
+          this.ROBOTABI,
+          this.ROBOTAddress
+        );
+        this.airdropContract = new this.web3.eth.Contract(
+          this.merkle.contractABI,
+          this.merkle.contractAddress
+        );
+
+        this.getAirdropStats();
+        var self = this;
+        this.statsInterval = setInterval(function () {
+          self.getAirdropStats();
+        }, 10000);
+      }
+      else {
         this.setState({ account: null });
-        //toast.error("Connect to Ethereum Mainnet"); // TOGGLE OFF FOR MAINNET
-        toast.error("Connect to Rinkeby");
+        toast.error("Connect to Rinkeby or Mainnet");
       }
     });
   };
@@ -174,6 +192,7 @@ class Airdrop extends Component {
             unclaimed: parseFloat(this.web3.utils.fromWei(result, "ether")),
           });
         });
+
       if (this.state.isEligible) {
         this.airdropContract.methods
           .isClaimed(
@@ -196,9 +215,24 @@ class Airdrop extends Component {
               ),
             });
           });
-      }
-    }
+       }
+     }
   };
+
+  // unclaimedAirdrops = () => {
+  //   if (this.web3 != null && this.airdropContract != null) {
+  //     this.airdropContract.methods
+  //       .isClaimed(
+  //         this.merkle.claims[1]
+  //         )
+  //       .call()
+  //       .then((isClaimed) => {
+  //         this.setState({
+  //           unclaimedAirdrops: isClaimed,
+  //         });
+  //       });
+  //   }
+  // };
 
   claimAirdrop = () => {
     if (this.web3 != null && this.airdropContract != null) {
@@ -286,8 +320,12 @@ class Airdrop extends Component {
             {this.state.day}
           </div>
           <div className="airdrop-subtitle">
-            <span>Claimable ROBOT: </span>
-            {this.state.percentage}%
+            <span>Unclaimed ROBOT: </span>
+            {this.state.unclaimed.toLocaleString()}
+          </div>
+          <div className="airdrop-subtitle">
+            <span>Unclaimed Drops: </span>
+            {this.state.unclaimedAirdrops}
           </div>
           <div className="airdrop-subtitle">
             <a
@@ -307,7 +345,6 @@ class Airdrop extends Component {
 
           <div className="airdrop-details">
             <div className="upper">
-              <div className="details-item">  </div>
               <div className="details-item">  </div>
             </div>
             <div className="lower">
