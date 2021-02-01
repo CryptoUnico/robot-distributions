@@ -5,3 +5,7 @@
 # Export to Excel
 - Pivot time period
 - Filter transaction type
+
+# Alternative
+- Monthly Merkles
+- Duration: One month to claim
