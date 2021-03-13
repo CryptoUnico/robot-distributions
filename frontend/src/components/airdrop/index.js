@@ -155,6 +155,23 @@ class Airdrop extends Component {
         this.statsInterval = setInterval(function () {
           self.getAirdropStats();
         }, 10000);
+      } else if (x === 1287) {
+        this.setState({ account: accounts[0].toString(), isConnected: true });
+
+        this.ROBOTContract = new this.web3.eth.Contract(
+          this.ROBOTABI,
+          this.ROBOTAddress
+        );
+        this.airdropContract = new this.web3.eth.Contract(
+          this.merkle.contractABI,
+          this.merkle.contractAddress
+        );
+
+        this.getAirdropStats();
+        var self = this;
+        this.statsInterval = setInterval(function () {
+          self.getAirdropStats();
+        }, 10000);
       }
       else {
         this.setState({ account: null });
